@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { ArrowRight, HeartHandshake, Search } from 'lucide-react'
 
 export default function Register(){
   const [email,setEmail]=useState('')
@@ -21,49 +22,24 @@ export default function Register(){
   }
 
   return (
-    <div className="auth-container">
-      <div className="auth-form">
-        <div className="card">
-          <div className="card-header">
-            <h2>Get Started</h2>
-            <p className="mb-0">Create your account to join the community</p>
-          </div>
-          <form onSubmit={submit} className="card-body">
-            <div className="form-group">
-              <label className="form-label">Full Name</label>
-              <input 
-                className="form-control" 
-                value={name} 
-                onChange={e=>setName(e.target.value)} 
-                placeholder="John Doe"
-              />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Email Address</label>
-              <input 
-                className="form-control" 
-                value={email} 
-                onChange={e=>setEmail(e.target.value)} 
-                placeholder="you@example.com"
-                type="email"
-              />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Password</label>
-              <input 
-                className="form-control" 
-                type="password" 
-                value={password} 
-                onChange={e=>setPassword(e.target.value)} 
-                placeholder="••••••••"
-              />
-            </div>
-            {error && <div className="alert alert-error"><span>⚠️</span><span>{error}</span></div>}
-            <button className="btn btn-primary btn-block" type="submit">Create Account</button>
-          </form>
-          <p className="form-help">Already have an account? <a href="/login">Sign in</a></p>
-        </div>
-      </div>
-    </div>
+    <main className="auth-shell">
+      <section className="auth-story auth-story-register">
+        <div className="brand-mark"><span className="brand-dot" /> Foundly</div>
+        <div className="story-copy"><p className="eyebrow">Good things find their way back</p><h1>Be part of the return.</h1><p>Join a thoughtful community making lost-and-found feel more human, more visible, and a lot less awkward.</p></div>
+        <div className="story-note"><HeartHandshake size={17} /><span>Built for kind people with busy lives</span></div>
+      </section>
+      <section className="auth-panel"><div className="auth-panel-inner">
+        <div className="mobile-brand"><div className="brand-mark"><span className="brand-dot" /> Foundly</div></div>
+        <div className="auth-heading"><div className="icon-badge"><Search size={19} /></div><p className="eyebrow">Join the network</p><h2>Make someone’s day.</h2><p>Create your free account and start returning the little things that matter.</p></div>
+        <form onSubmit={submit} className="auth-form">
+          <label>Full name<input className="field" value={name} onChange={e=>setName(e.target.value)} placeholder="Jordan Lee" required /></label>
+          <label>Email address<input className="field" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com" type="email" required /></label>
+          <label>Password<input className="field" type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="At least 6 characters" minLength="6" required /></label>
+          {error && <div className="alert alert-error">{error.replace('Error: ', '')}</div>}
+          <button className="button button-primary button-wide" type="submit">Create account <ArrowRight size={17} /></button>
+        </form>
+        <p className="auth-switch">Already have an account? <a href="/login">Sign in</a></p>
+      </div></section>
+    </main>
   )
 }

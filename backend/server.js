@@ -5,6 +5,7 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const itemRoutes = require("./routes/itemRoutes");
+const claimRoutes = require("./routes/claimRoutes");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -12,12 +13,14 @@ const port = process.env.PORT || 5000;
 app.use(cors({ origin: "http://localhost:5173" }));
 app.use(express.json());
 
+
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });
 });
 
 app.use("/api/auth", authRoutes);
 app.use("/api/items", itemRoutes);
+app.use("/api/claims", claimRoutes);
 
 const startServer = async () => {
   await connectDB();

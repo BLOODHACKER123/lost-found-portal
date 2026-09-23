@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { ArrowRight, KeyRound, Search } from 'lucide-react'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -20,40 +21,29 @@ export default function Login() {
   }
 
   return (
-    <div className="auth-container">
-      <div className="auth-form">
-        <div className="card">
-          <div className="card-header">
-            <h2>Welcome Back</h2>
-            <p className="mb-0">Sign in to your account</p>
-          </div>
-          <form onSubmit={submit} className="card-body">
-            <div className="form-group">
-              <label className="form-label">Email Address</label>
-              <input 
-                className="form-control" 
-                value={email} 
-                onChange={e=>setEmail(e.target.value)} 
-                placeholder="you@example.com" 
-                type="email"
-              />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Password</label>
-              <input 
-                className="form-control" 
-                type="password" 
-                value={password} 
-                onChange={e=>setPassword(e.target.value)} 
-                placeholder="••••••••"
-              />
-            </div>
-            {error && <div className="alert alert-error"><span>⚠️</span><span>{error}</span></div>}
-            <button className="btn btn-primary btn-block" type="submit">Sign In</button>
-          </form>
-          <p className="form-help">Don't have an account? <a href="/register">Create one</a></p>
+    <main className="auth-shell">
+      <section className="auth-story">
+        <div className="brand-mark"><span className="brand-dot" /> Foundly</div>
+        <div className="story-copy">
+          <p className="eyebrow">A little help goes a long way</p>
+          <h1>Return what matters.</h1>
+          <p>One calm place for your campus community to report, search, and reunite with the things that keep your day moving.</p>
         </div>
-      </div>
-    </div>
+        <div className="story-note"><Search size={17} /><span>2,481 items reunited this year</span></div>
+      </section>
+      <section className="auth-panel">
+        <div className="auth-panel-inner">
+          <div className="mobile-brand"><div className="brand-mark"><span className="brand-dot" /> Foundly</div></div>
+          <div className="auth-heading"><div className="icon-badge"><KeyRound size={19} /></div><p className="eyebrow">Welcome back</p><h2>Pick up where you left off.</h2><p>Sign in to keep an eye on your reports and messages.</p></div>
+          <form onSubmit={submit} className="auth-form">
+            <label>Email address<input className="field" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com" type="email" required /></label>
+            <label>Password<input className="field" type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Enter your password" required /></label>
+            {error && <div className="alert alert-error">{error.replace('Error: ', '')}</div>}
+            <button className="button button-primary button-wide" type="submit">Sign in <ArrowRight size={17} /></button>
+          </form>
+          <p className="auth-switch">New to Foundly? <a href="/register">Create an account</a></p>
+        </div>
+      </section>
+    </main>
   )
 }

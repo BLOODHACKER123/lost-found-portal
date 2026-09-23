@@ -1,5 +1,10 @@
-const jwt = require("jsonwebtoken");
+const { createClient } = require("@supabase/supabase-js");
 const User = require("../models/User");
+
+const supabase = createClient(
+  process.env.VITE_SUPABASE_URL,
+  process.env.VITE_SUPABASE_PUBLISHABLE_KEY
+);
 
 const protect = async (req, res, next) => {
   try {
@@ -13,13 +18,23 @@ const protect = async (req, res, next) => {
 
       token = req.headers.authorization.split(" ")[1];
 
-      const decoded = jwt.verify(
-        token,
-        process.env.JWT_SECRET
-      );
+      const { data, error } = await supabase.auth.getUser(token);
 
-      req.user = await User.findById(decoded.id)
-        .select("-password");
+      if (error || !data.user) {
+        return res.status(401).json({ message: "Not authorized" });
+      }
+
+      const authUser = data.user;
+      const name = authUser.user_metadata?.name || authUser.email;
+
+      req.user = await User.findOneAndUpdate(
+        { supabaseId: authUser.id },
+        {
+          $set: { name, email: authUser.email },
+          $setOnInsert: { supabaseId: authUser.id },
+        },
+        { new: true, upsert: true, setDefaultsOnInsert: true }
+      ).select("-password");
 
       next();
 

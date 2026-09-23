@@ -1,40 +1,52 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import api from '../services/api'
+import { supabase } from '../services/supabase'
 
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('user')) } catch { return null }
-  })
+  const [user, setUser] = useState(null)
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
-    if (token) api.setToken(token)
+    let mounted = true
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!mounted) return
+      api.setToken(session?.access_token)
+      setUser(session?.user ?? null)
+    })
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      api.setToken(session?.access_token)
+      setUser(session?.user ?? null)
+    })
+
+    return () => {
+      mounted = false
+      subscription.unsubscribe()
+    }
   }, [])
 
   const isAuthenticated = Boolean(user)
 
   const login = async (credentials) => {
-    const res = await api.post('/auth/login', credentials)
-    const data = res.data
-    localStorage.setItem('token', data.token)
-    localStorage.setItem('user', JSON.stringify(data.user))
-    api.setToken(data.token)
-    setUser(data.user)
+    const { data, error } = await supabase.auth.signInWithPassword(credentials)
+    if (error) throw error
     return data
   }
 
   const register = async (payload) => {
-    const res = await api.post('/auth/register', payload)
-    return res.data
+    const { data, error } = await supabase.auth.signUp({
+      email: payload.email,
+      password: payload.password,
+      options: { data: { name: payload.name } },
+    })
+    if (error) throw error
+    return data
   }
 
-  const logout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
-    api.setToken(null)
-    setUser(null)
+  const logout = async () => {
+    await supabase.auth.signOut()
   }
 
   return (
